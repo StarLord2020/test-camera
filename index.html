@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        select:hover, select:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+<h2>Select a Camera</h2>
+<select id="videoSelect"></select>
+
+<script>
+    let videoSelect = document.getElementById('videoSelect');
+    let isEnumerateVideoDevices = false;
+
+    async function enumerateVideoDevices() {
+        console.log('02 ----> Get Video Devices');
+
+        if (videoSelect) videoSelect.innerHTML = '';
+
+        await navigator.mediaDevices
+            .enumerateDevices()
+            .then((devices) => {
+                devices.forEach(async (device) => {
+                    if ('videoinput' === device.kind) {
+                        await addChild(device, [videoSelect]);
+                    }
+                });
+            })
+            .then(() => {
+                isEnumerateVideoDevices = true;
+            });
+    }
+
+    async function addChild(device, els) {
+        els.forEach((el) => {
+            let option = document.createElement('option');
+            option.value = device.deviceId;
+            option.innerText = `📹 ` + (device.label || `Camera ${el.length + 1}`);
+            el.appendChild(option);
+        });
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(enumerateVideoDevices)
+        .catch(err => console.error('Error accessing media devices.', err));
+</script>
+</body>
+</html>
