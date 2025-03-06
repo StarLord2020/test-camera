@@ -65,7 +65,7 @@
         els.forEach((el) => {
             let option = document.createElement('option');
             option.value = device.deviceId;
-            option.innerText = `📹 ` + (device.label || `Camera ${el.length + 1}`);
+            option.innerText = `📹 ` + (device.label?.replace(/\(([\da-fA-F]{4}:[\da-fA-F]{4})\)/g, "").trim() || `Camera ${el.length + 1}`);
             el.appendChild(option);
         });
     }
